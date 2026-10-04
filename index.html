@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CLARK'S EVENTS · GMod Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #0a0a0f; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7c3aed, #06b6d4); border-radius: 5px; }
+
+        :root {
+            --accent: #7c3aed;
+            --accent-2: #06b6d4;
+            --accent-gold: #fbbf24;
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            --bg-dark: #0a0a0f;
+            --bg-panel: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0f0f16;
+            --border: #26262e;
+            --text: #ffffff;
+            --text-dim: #8a8a9a;
+            --gradient: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            --gradient-soft: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.15));
+        }
+        body[data-theme="light"] {
+            --bg-dark: #f5f5fa;
+            --bg-panel: #ffffff;
+            --bg-card: #fafafe;
+            --bg-input: #ffffff;
+            --border: #e0e0e8;
+            --text: #0a0a0f;
+            --text-dim: #666666;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text); line-height: 1.6; min-height: 100vh; overflow-x: hidden; font-size: 14px; position: relative; }
+
+        /* Анимированный фон — частицы */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(124,58,237,0.18) 0%, transparent 35%),
+                radial-gradient(circle at 85% 70%, rgba(6,182,212,0.15) 0%, transparent 35%),
+                radial-gradient(circle at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 60%);
+            z-index: -1;
+            animation: pulseBg 8s ease-in-out infinite alternate;
+        }
+        @keyframes pulseBg {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+        }
+        body[data-theme="light"]::before { opacity: 0.3; }
+        body[data-theme="light"]::after { opacity: 0.5; }
+
+        /* АВТОРИЗАЦИЯ */
+        .auth-screen { position: fixed; inset: 0; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+        .auth-box { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 20px; padding: 48px 44px; max-width: 440px; width: 100%; box-shadow: 0 30px 80px rgba(124,58,237,0.3); position: relative; overflow: hidden; }
+        .auth-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient); }
+        .auth-logo { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: 2px; text-align: center; margin-bottom: 8px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .auth-sub { text-align: center; font-size: 0.7rem; color: var(--text-dim); letter-spacing: 4px; margin-bottom: 32px; text-transform: uppercase; font-weight: 600; }
+        .auth-tabs { display: flex; gap: 8px; margin-bottom: 24px; background: var(--bg-input); padding: 4px; border-radius: 10px; }
+        .auth-tabs button { flex: 1; background: transparent; border: none; color: var(--text-dim); padding: 10px; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .auth-tabs button.active { background: var(--gradient); color: #fff; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 13px 16px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: 0.2s; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+        .form-group select option { background: var(--bg-panel); color: var(--text); }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 12px 24px; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: 0.25s; border-radius: 10px; text-decoration: none; font-family: 'Inter', sans-serif; }
+        .btn:hover { background: var(--accent); color: #fff; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,0.4); }
+        .btn-primary { background: var(--gradient); color: #fff; border: none; }
+        .btn-primary:hover { box-shadow: 0 8px 30px rgba(124,58,237,0.5); }
+        .btn-gold { color: var(--accent-gold); border-color: var(--accent-gold); }
+        .btn-gold:hover { background: var(--accent-gold); color: #000; box-shadow: 0 8px 25px rgba(251,191,36,0.4); }
+        .btn-red { color: var(--accent-red); border-color: var(--accent-red); }
+        .btn-red:hover { background: var(--accent-red); color: #fff; }
+        .btn-green { color: var(--accent-green); border-color: var(--accent-green); }
+        .btn-green:hover { background: var(--accent-green); color: #fff; }
+        .btn-ghost { border-color: var(--border); color: var(--text-dim); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: transparent; }
+        .btn-full { width: 100%; }
+        .btn-sm { padding: 8px 16px; font-size: 0.65rem; }
+
+        .app { display: none; }
+        .app.active { display: block; }
+
+        /* ШАПКА */
+        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(18,18,26,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 14px 32px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        body[data-theme="light"] .top-bar { background: rgba(255,255,255,0.9); }
+        .top-brand { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 800; letter-spacing: 2px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .top-divider { width: 1px; height: 24px; background: var(--border); }
+        .top-online { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text-dim); }
+        .top-online .dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px var(--accent-green); animation: onlinePulse 2s infinite; }
+        @keyframes onlinePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .top-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap; }
+        .top-profile { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .top-profile:hover { border-color: var(--accent); }
+        .top-profile .tp-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 0.9rem; color: #fff; background-size: cover; background-position: center; flex-shrink: 0; }
+        .top-profile .tp-info { display: flex; flex-direction: column; font-size: 0.7rem; line-height: 1.2; }
+        .top-profile .tp-name { color: var(--text); font-weight: 700; font-size: 0.75rem; }
+        .top-profile .tp-rank { color: var(--accent); font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; }
+        .top-profile .tp-tags { display: flex; gap: 4px; margin-top: 2px; flex-wrap: wrap; }
+
+        .sidebar-toggle { display: none; background: transparent; border: 1px solid var(--border); color: var(--text); width: 40px; height: 40px; border-radius: 10px; cursor: pointer; }
+      
+        .main-layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 70px); }
+        .sidebar { background: var(--bg-panel); border-right: 1px solid var(--border); position: sticky; top: 70px; max-height: calc(100vh - 70px); overflow-y: auto; padding: 20px 0; }
+        .sidebar-section { padding: 12px 20px 6px; font-size: 0.6rem; font-weight: 700; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
+        .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; margin: 2px 10px; color: var(--text-dim); font-weight: 500; font-size: 0.85rem; cursor: pointer; border-radius: 10px; transition: 0.15s; }
+        .sidebar-item:hover { background: var(--gradient-soft); color: var(--text); }
+        .sidebar-item.active { background: var(--gradient); color: #fff; font-weight: 600; }
+        .sidebar-item i { width: 20px; text-align: center; font-size: 0.95rem; }
+        .sidebar-item .badge-count { margin-left: auto; background: var(--accent-red); color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+        .sidebar-item .badge-count.hidden { display: none; }
+        .sidebar-item .badge-count.gold { background: var(--accent-gold); color: #000; }
+
+        .content { padding: 32px 40px; max-width: 1400px; }
+        .content-header { margin-bottom: 32px; }
+        .content-header h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .content-header .breadcrumb { font-size: 0.8rem; color: var(--text-dim); }
+        .content-header .breadcrumb span { color: var(--accent); }
+
+        .panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 20px; }
+        .panel-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .panel-title i { color: var(--accent); }
+
+        /* HERO — главная */
+        .hero { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.1)); border: 1px solid var(--border); border-radius: 20px; padding: 60px 40px; text-align: center; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 50%); animation: rotateBg 20s linear infinite; }
+        @keyframes rotateBg { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hero h2 { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 900; margin-bottom: 16px; position: relative; z-index: 1; letter-spacing: -1px; }
+        .hero h2 span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1rem; color: var(--text-dim); max-width: 600px; margin: 0 auto 28px; position: relative; z-index: 1; }
+        .hero .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+
+        /* Статы */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; transition: 0.2s; }
+        .stat-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(124,58,237,0.15); }
+        .stat-card .stat-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--gradient-soft); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--accent); margin: 0 auto 12px; }
+        .stat-card .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+        .stat-card .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        /* Карточки */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: 0.2s; }
+        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
+        .card-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--gradient-soft); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--accent); margin-bottom: 14px; }
+        .card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+        .card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+
+        /* Ивент-карточка */
+        .event-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 12px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; transition: 0.2s; }
+        .event-card:hover { border-color: var(--accent); }
+        .event-status { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .event-status.planned { background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); }
+        .event-status.active { background: var(--accent-green); box-shadow: 0 0 15px var(--accent-green); animation: onlinePulse 1.5s infinite; }
+        .event-status.done { background: var(--text-dim); }
+        .event-info { flex: 1; min-width: 200px; }
+        .event-info h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+        .event-info p { font-size: 0.8rem; color: var(--text-dim); }
+        .event-meta { display: flex; gap: 12px; font-size: 0.7rem; color: var(--text-dim); margin-top: 6px; flex-wrap: wrap; }
+        .event-actions { display: flex; gap: 8px; }
+
+        /* Роли / пользователи */
+        .role-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+        .role-badge.founder { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
+        .role-badge.curator { background: linear-gradient(135deg, #7c3aed, #06b6d4); color: #fff; }
+        .role-badge.staff { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid #ef4444; }
+        .role-badge.member { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid #fbbf24; }
+        .role-badge.user { background: rgba(138,138,154,0.15); color: #8a8a9a; border: 1px solid var(--border); }
+
+        /* Значки */
+        .tag-pill { display: inline-flex; padding: 3px 10px; border-radius: 6px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; border: 1px solid; }
+        .tag-pill.purple { background: rgba(124,58,237,0.15); color: #a78bfa; border-color: #a78bfa; }
+        .tag-pill.cyan { background: rgba(6,182,212,0.15); color: #22d3ee; border-color: #22d3ee; }
+        .tag-pill.gold { background: rgba(251,191,36,0.15); color: #fbbf24; border-color: #fbbf24; }
+        .tag-pill.red { background: rgba(239,68,68,0.15); color: #ef4444; border-color: #ef4444; }
+        .tag-pill.green { background: rgba(16,185,129,0.15); color: #34d399; border-color: #34d399; }
+
+        /* Таблица */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .data-table th { text-align: left; padding: 14px 16px; background: var(--bg-input); color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-size: 0.65rem; font-weight: 700; border-bottom: 1px solid var(--border); }
+        .data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        .data-table tr:hover td { background: rgba(124,58,237,0.04); }
+
+        /* Участники — карточка */
+        .member-card { display: flex; align-items: center; gap: 16px; padding: 18px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; flex-wrap: wrap; transition: 0.2s; }
+        .member-card:hover { border-color: var(--accent); }
+        .member-avatar { width: 52px; height: 52px; border-radius: 14px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1.3rem; color: #fff; background-size: cover; background-position: center; flex-shrink: 0; }
+        .member-info { flex: 1; min-width: 180px; }
+        .member-info .member-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .member-info .member-meta { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
+        .member-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        /* Модалки */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); z-index: 9997; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+        .modal { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 20px; padding: 36px; max-width: 520px; width: 100%; box-shadow: 0 30px 80px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; }
+        .modal h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 800; margin-bottom: 22px; letter-spacing: 0.5px; }
+        .modal h3 i { color: var(--accent); margin-right: 8px; }
+
+        /* Чат */
+        .chat-container { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; height: calc(100vh - 320px); min-height: 400px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+        .chat-msg { display: flex; gap: 12px; }
+        .chat-msg .cm-avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; flex-shrink: 0; background-size: cover; background-position: center; }
+        .chat-msg .cm-content { flex: 1; min-width: 0; background: var(--bg-card); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); }
+        .chat-msg .cm-author { font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .chat-msg .cm-text { font-size: 0.9rem; word-wrap: break-word; }
+        .chat-msg .cm-time { font-size: 0.65rem; color: var(--text-dim); margin-top: 6px; }
+        .chat-msg.mine { flex-direction: row-reverse; }
+        .chat-msg.mine .cm-content { background: var(--gradient-soft); border-color: var(--accent); }
+        .chat-input-area { display: flex; gap: 10px; padding: 16px; border-top: 1px solid var(--border); background: var(--bg-input); }
+        .chat-input-area input { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 13px 16px; border-radius: 10px; font-size: 0.9rem; }
+        .chat-input-area input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+        .chat-input-area button { background: var(--gradient); color: #fff; border: none; padding: 13px 22px; border-radius: 10px; font-weight: 700; font-size: 0.75rem; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* Алерты */
+        .alert { padding: 14px 18px; border-radius: 10px; margin-bottom: 16px; font-size: 0.85rem; border-left: 3px solid; }
+        .alert-success { background: rgba(16,185,129,0.1); color: #34d399; border-color: #10b981; }
+        .alert-danger { background: rgba(239,68,68,0.1); color: #ef4444; border-color: #ef4444; }
+        .alert-info { background: rgba(124,58,237,0.1); color: #a78bfa; border-color: var(--accent); }
+        .hidden { display: none !important; }
+
+        /* Заявки */
+        .application-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: 12px; }
+        .application-card h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .application-field { margin-bottom: 8px; font-size: 0.85rem; }
+        .application-field .label { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .application-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 90px; right: 20px; z-index: 10001; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: var(--bg-panel); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px; padding: 16px 22px; font-size: 0.85rem; color: var(--text); box-shadow: 0 15px 40px rgba(0,0,0,0.5); min-width: 300px; max-width: 420px; pointer-events: auto; animation: toastIn 0.3s ease, toastOut 0.3s ease 3.7s forwards; display: flex; align-items: center; gap: 14px; }
+        .toast.success { border-left-color: var(--accent-green); }
+        .toast.danger { border-left-color: var(--accent-red); }
+        .toast.warning { border-left-color: var(--accent-gold); }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100px); } }
+        .toast .toast-icon { font-size: 1.3rem; flex-shrink: 0; color: var(--accent); }
+        .toast.success .toast-icon { color: var(--accent-green); }
+        .toast.danger .toast-icon { color: var(--accent-red); }
+        .toast.warning .toast-icon { color: var(--accent-gold); }
+        .toast .toast-title { font-weight: 700; font-size: 0.8rem; margin-bottom: 3px; }
+        .toast .toast-msg { font-size: 0.75rem; color: var(--text-dim); }
+
+        /* Тема */
+        .theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 16px; }
+        .theme-item { background: var(--bg-card); border: 2px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; cursor: pointer; transition: 0.25s; }
+        .theme-item:hover { transform: translateY(-4px); }
+        .theme-item.active { border-color: var(--accent); box-shadow: 0 0 30px rgba(124,58,237,0.2); }
+        .theme-item .theme-preview { width: 60px; height: 60px; border-radius: 16px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; }
+        .theme-item .theme-name { font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+        .theme-item .theme-desc { font-size: 0.7rem; color: var(--text-dim); }
+
+        /* Адаптив */
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; z-index: 999; width: 260px; transition: 0.3s; max-height: 100vh; }
+            .sidebar.open { left: 0; }
+            .sidebar-toggle { display: block; }
+            .content { padding: 20px; }
+            .top-bar { padding: 12px 16px; gap: 12px; }
+            .hero { padding: 40px 24px; }
+            .hero h2 { font-size: 1.8rem; }
+        }
+        @media (max-width: 600px) {
+            .content-header h1 { font-size: 1.5rem; }
+            .top-brand { font-size: 1rem; letter-spacing: 1px; }
+            .top-profile .tp-info { display: none; }
+            .modal { padding: 24px; }
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+
+<!-- АВТОРИЗАЦИЯ -->
+<div class="auth-screen" id="authScreen">
+    <div class="auth-box">
+        <div class="auth-logo">CLARK'S EVENTS</div>
+        <div class="auth-sub">Garry's Mod · Event Community</div>
+        <div class="auth-tabs">
+            <button id="tabLogin" class="active">Вход</button>
+            <button id="tabRegister">Регистрация</button>
+        </div>
+        <form id="authLoginForm">
+            <div class="form-group">
+                <label for="authLoginUser">Логин</label>
+                <input type="text" id="authLoginUser" placeholder="Введите логин" required />
+            </div>
+            <div class="form-group">
+                <label for="authLoginPass">Пароль</label>
+                <input type="password" id="authLoginPass" placeholder="Введите пароль" required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Войти на сервер</button>
+            <div id="authLoginMsg" class="hidden" style="margin-top:14px;"></div>
+        </form>
+        <form id="authRegisterForm" class="hidden">
+            <div class="form-group">
+                <label for="authRegUser">Логин</label>
+                <input type="text" id="authRegUser" placeholder="Придумайте логин" required />
+            </div>
+            <div class="form-group">
+                <label for="authRegPass">Пароль</label>
+                <input type="password" id="authRegPass" placeholder="Минимум 4 символа" required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Создать аккаунт</button>
+            <div id="authRegisterMsg" class="hidden" style="margin-top:14px;"></div>
+        </form>
+    </div>
+</div>
+
+<!-- ОСНОВНОЕ -->
+<div class="app" id="app">
+    <div class="top-bar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="top-brand" id="topBrand">CLARK'S EVENTS</div>
+        <div class="top-divider"></div>
+        <div class="top-online">
+            <div class="dot"></div>
+            <span><strong id="onlineCount">0</strong> онлайн</span>
+        </div>
+        <div class="top-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openSettingsModal()"><i class="fas fa-palette"></i> Настройки</button>
+            <div class="top-profile" onclick="openMyProfileModal()" title="Профиль">
+                <div class="tp-avatar" id="topAvatar">?</div>
+                <div class="tp-info">
+                    <div class="tp-name" id="topName">---</div>
+                    <div class="tp-rank" id="topRank">---</div>
+                    <div class="tp-tags" id="topTags"></div>
+                </div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="logout()" style="border-color:var(--accent-red); color:var(--accent-red);"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-section">// Меню</div>
+            <div class="sidebar-item active" data-section="dashboard" onclick="switchSection('dashboard')"><i class="fas fa-home"></i> Главная</div>
+            <div class="sidebar-item" data-section="events" onclick="switchSection('events')"><i class="fas fa-calendar-alt"></i> Ивенты</div>
+            <div class="sidebar-item" data-section="news" onclick="switchSection('news')"><i class="fas fa-newspaper"></i> Новости</div>
+            <div class="sidebar-item" data-section="chat" onclick="switchSection('chat')"><i class="fas fa-comments"></i> Чат</div>
+
+            <div class="sidebar-section">// Сообщество</div>
+            <div class="sidebar-item" data-section="members" onclick="switchSection('members')"><i class="fas fa-users"></i> Участники</div>
+            <div class="sidebar-item" data-section="apply" onclick="switchSection('apply')"><i class="fas fa-file-signature"></i> Заявки</div>
+
+            <div class="sidebar-section" id="adminSectionTitle" style="display:none;">// Админ</div>
+            <div class="sidebar-item admin-only hidden" data-section="applications" onclick="switchSection('applications')">
+                <i class="fas fa-inbox"></i> Очередь заявок
+                <span class="badge-count gold hidden" id="appBadgeSidebar">0</span>
+            </div>
+            <div class="sidebar-item admin-only hidden" data-section="manage_members" onclick="switchSection('manage_members')"><i class="fas fa-user-cog"></i> Управление</div>
+            <div class="sidebar-item admin-only hidden" data-section="manage_events" onclick="switchSection('manage_events')"><i class="fas fa-calendar-plus"></i> Ивенты</div>
+            <div class="sidebar-item admin-only hidden" data-section="manage_roles" onclick="switchSection('manage_roles')"><i class="fas fa-user-shield"></i> Роли</div>
+            <div class="sidebar-item admin-only hidden" data-section="manage_tags" onclick="switchSection('manage_tags')"><i class="fas fa-tags"></i> Значки</div>
+            <div class="sidebar-item admin-only hidden" data-section="adminlogs" onclick="switchSection('adminlogs')"><i class="fas fa-terminal"></i> Логи</div>
+
+            <div class="sidebar-section">// Прочее</div>
+            <div class="sidebar-item" data-section="rules" onclick="switchSection('rules')"><i class="fas fa-scroll"></i> Правила</div>
+            <div class="sidebar-item" data-section="partners" onclick="switchSection('partners')"><i class="fas fa-handshake"></i> Партнёры</div>
+            <div class="sidebar-item" data-section="settings" onclick="switchSection('settings')"><i class="fas fa-cog"></i> Настройки</div>
+        </aside>
+        <div class="content" id="content"></div>
+    </div>
+</div>
+
+<!-- МОДАЛКИ -->
+
+<!-- Профиль пользователя -->
+<div class="modal-overlay hidden" id="myProfileModal">
+    <div class="modal">
+        <h3><i class="fas fa-user-circle"></i> Мой профиль</h3>
+        <form id="myProfileForm">
+            <div class="form-group" style="text-align:center;">
+                <div id="myProfilePreview" style="width:120px; height:120px; border-radius:50%; background:var(--gradient); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-size:3rem; font-weight:800; color:#fff; margin:0 auto 12px; background-size:cover; background-position:center;">?</div>
+            </div>
+            <div class="form-group"><label>Ваш логин</label><input type="text" id="myProfileName" disabled style="opacity:0.6;" /></div>
+            <div class="form-group"><label>Ваша роль</label><input type="text" id="myProfileRole" disabled style="opacity:0.6;" /></div>
+            <div class="form-group"><label>Ваши значки</label><div id="myProfileTags" style="display:flex; gap:6px; flex-wrap:wrap; min-height:24px;"></div></div>
+            <div class="form-group"><label for="myAvatarFile">Сменить аватарку</label><input type="file" id="myAvatarFile" accept="image/*" /></div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Сохранить</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeMyProfileModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Настройки темы -->
+<div class="modal-overlay hidden" id="settingsModal">
+    <div class="modal" style="max-width:640px;">
+        <h3><i class="fas fa-palette"></i> Настройки дизайна</h3>
+        <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:16px;">Выберите тему. Она сохраняется на вашем аккаунте.</p>
+        <div class="theme-grid">
+            <div class="theme-item" data-theme-name="dark" onclick="setTheme('dark')">
+                <div class="theme-preview" style="background: linear-gradient(135deg, #7c3aed, #06b6d4);"><i class="fas fa-moon"></i></div>
+                <div class="theme-name">Тёмная (Violet)</div>
+                <div class="theme-desc">#7c3aed / #06b6d4</div>
+            </div>
+            <div class="theme-item" data-theme-name="light" onclick="setTheme('light')">
+                <div class="theme-preview" style="background: linear-gradient(135deg, #a78bfa, #22d3ee); color: #000;"><i class="fas fa-sun"></i></div>
+                <div class="theme-name">Светлая</div>
+                <div class="theme-desc">#ffffff / #7c3aed</div>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top: 24px;">
+            <button type="button" class="btn btn-ghost btn-full" onclick="closeSettingsModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Заявка на MEMBER -->
+<div class="modal-overlay hidden" id="applyMemberModal">
+    <div class="modal">
+        <h3><i class="fas fa-file-signature"></i> Заявка на EVENT_MEMBER</h3>
+        <form id="applyMemberForm">
+            <div class="form-group"><label for="applyAge">Возраст</label><input type="number" id="applyAge" placeholder="Укажите возраст" required min="10" max="99" /></div>
+            <div class="form-group"><label for="applySteam">Steam / Discord</label><input type="text" id="applySteam" placeholder="Ваш ник в Steam или Discord" required /></div>
+            <div class="form-group"><label for="applyExp">Опыт в GMod</label><input type="text" id="applyExp" placeholder="Сколько часов, какие серверы" /></div>
+            <div class="form-group"><label for="applyWhy">Почему хотите стать MEMBER?</label><textarea id="applyWhy" rows="4" placeholder="Расскажите о себе..." required></textarea></div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Отправить заявку</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeApplyMemberModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Заявка на STAFF -->
+<div class="modal-overlay hidden" id="applyStaffModal">
+    <div class="modal">
+        <h3><i class="fas fa-shield-alt"></i> Заявка на EVENT_STAFF</h3>
+        <form id="applyStaffForm">
+            <div class="form-group"><label for="applyStaffAge">Возраст</label><input type="number" id="applyStaffAge" placeholder="Укажите возраст" required min="10" max="99" /></div>
+            <div class="form-group"><label for="applyStaffSteam">Steam / Discord</label><input type="text" id="applyStaffSteam" placeholder="Ваш ник" required /></div>
+            <div class="form-group"><label for="applyStaffExp">Опыт модерации</label><input type="text" id="applyStaffExp" placeholder="Где модерировали, сколько" required /></div>
+            <div class="form-group"><label for="applyStaffWhy">Почему именно вы?</label><textarea id="applyStaffWhy" rows="4" placeholder="Расскажите о себе..." required></textarea></div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-gold" style="flex:1;">Отправить заявку</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeApplyStaffModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Создание/редактирование ивента -->
+<div class="modal-overlay hidden" id="eventModal">
+    <div class="modal">
+        <h3 id="eventModalTitle"><i class="fas fa-calendar-plus"></i> Создать ивент</h3>
+        <form id="eventForm">
+            <input type="hidden" id="eventEditId" />
+            <div class="form-group"><label for="eventTitle">Название ивента</label><input type="text" id="eventTitle" required placeholder="Например: Ночь в Раккун-Сити" /></div>
+            <div class="form-group"><label for="eventDesc">Описание</label><textarea id="eventDesc" rows="3" required placeholder="Краткое описание сюжета"></textarea></div>
+            <div class="form-group"><label for="eventDate">Дата и время</label><input type="datetime-local" id="eventDate" required /></div>
+            <div class="form-group"><label for="eventSetting">Сеттинг</label>
+                <select id="eventSetting">
+                    <option value="Resident Evil">Resident Evil</option>
+                    <option value="SCP Foundation">SCP Foundation</option>
+                    <option value="S.T.A.L.K.E.R.">S.T.A.L.K.E.R.</option>
+                    <option value="Half-Life">Half-Life</option>
+                    <option value="Metro 2033">Metro 2033</option>
+                    <option value="Warhammer 40K">Warhammer 40K</option>
+                    <option value="Custom RP">Custom RP</option>
+                    <option value="NON-RP">NON-RP (без сюжета)</option>
+                </select>
+            </div>
+            <div class="form-group"><label for="eventStatus">Статус</label>
+                <select id="eventStatus">
+                    <option value="planned">Запланирован</option>
+                    <option value="active">Активен</option>
+                    <option value="done">Завершён</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Сохранить</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeEventModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Создание/редактирование роли -->
+<div class="modal-overlay hidden" id="roleModal">
+    <div class="modal">
+        <h3 id="roleModalTitle"><i class="fas fa-user-shield"></i> Создать роль</h3>
+        <form id="roleForm">
+            <input type="hidden" id="roleEditId" />
+            <div class="form-group"><label for="roleName">Название роли</label><input type="text" id="roleName" required placeholder="Например: EVENT_HELPER" /></div>
+            <div class="form-group"><label for="roleColor">Цвет</label>
+                <select id="roleColor">
+                    <option value="user">Серый (Участник)</option>
+                    <option value="member">Золотой (MEMBER)</option>
+                    <option value="staff">Красный (STAFF)</option>
+                    <option value="curator">Градиент (CURATOR)</option>
+                    <option value="founder">Золото+ (FOUNDER)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Права доступа</label>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.85rem;">
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="checkbox" id="permViewApps" style="width:auto;" /> Видеть заявки</label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="checkbox" id="permManageMembers" style="width:auto;" /> Управлять участниками</label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="checkbox" id="permManageEvents" style="width:auto;" /> Управлять ивентами</label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="checkbox" id="permManageRoles" style="width:auto;" /> Управлять ролями</label>
+                    <label style="display:flex; gap:8px; cursor:pointer;"><input type="checkbox" id="permManageTags" style="width:auto;" /> Управлять значками</label>
+                    <label style="display:flex; gap:8px; cursor:pointer; color:#fbbf24; font-weight:700;"><input type="checkbox" id="permAdmin" style="width:auto;" /> 👑 Администратор</label>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Сохранить</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeRoleModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Создание/редактирование значка -->
+<div class="modal-overlay hidden" id="tagModal">
+    <div class="modal">
+        <h3 id="tagModalTitle"><i class="fas fa-tags"></i> Создать значок</h3>
+        <form id="tagForm">
+            <input type="hidden" id="tagEditId" />
+            <div class="form-group"><label for="tagName">Название значка</label><input type="text" id="tagName" required placeholder="Например: FOUNDER" /></div>
+            <div class="form-group"><label for="tagColor">Цвет</label>
+                <select id="tagColor">
+                    <option value="purple">Фиолетовый</option>
+                    <option value="cyan">Циан</option>
+                    <option value="gold">Золотой</option>
+                    <option value="red">Красный</option>
+                    <option value="green">Зелёный</option>
+                </select>
+            </div>
+            <div class="form-group"><label for="tagDesc">Описание (необязательно)</label><input type="text" id="tagDesc" placeholder="Краткое описание" /></div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Сохранить</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeTagModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Редактирование участника -->
+<div class="modal-overlay hidden" id="editMemberModal">
+    <div class="modal">
+        <h3><i class="fas fa-user-edit"></i> Редактировать участника</h3>
+        <form id="editMemberForm">
+            <input type="hidden" id="editMemberId" />
+            <div class="form-group" style="text-align:center;">
+                <div id="editMemberPreview" style="width:100px; height:100px; border-radius:16px; background:var(--gradient); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-size:2.5rem; font-weight:800; color:#fff; margin:0 auto 12px; background-size:cover; background-position:center;">?</div>
+            </div>
+            <div class="form-group"><label for="editMemberName">Логин</label><input type="text" id="editMemberName" required /></div>
+            <div class="form-group"><label for="editMemberAvatar">Аватарка</label><input type="file" id="editMemberAvatar" accept="image/*" /></div>
+            <div class="form-group"><label for="editMemberRole">Роль</label><select id="editMemberRole"></select></div>
+            <div class="form-group"><label>Значки</label><div id="editMemberTags" style="display:flex; flex-direction:column; gap:6px;"></div></div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Сохранить</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeEditMemberModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============ БАЗА ДАННЫХ ============
+    const DB = {
+        getUsers() { return JSON.parse(localStorage.getItem('ce_users')) || []; },
+        setUsers(u) { localStorage.setItem('ce_users', JSON.stringify(u)); },
+        getCurrent() { return JSON.parse(localStorage.getItem('ce_current')) || null; },
+        setCurrent(u) { if (u) localStorage.setItem('ce_current', JSON.stringify(u)); else localStorage.removeItem('ce_current'); },
+
+        getEvents() { return JSON.parse(localStorage.getItem('ce_events')) || []; },
+        setEvents(e) { localStorage.setItem('ce_events', JSON.stringify(e)); },
+
+        getNews() { return JSON.parse(localStorage.getItem('ce_news')) || []; },
+        setNews(n) { localStorage.setItem('ce_news', JSON.stringify(n)); },
+
+        getApps() { return JSON.parse(localStorage.getItem('ce_apps')) || []; },
+        setApps(a) { localStorage.setItem('ce_apps', JSON.stringify(a)); },
+
+        getRoles() { return JSON.parse(localStorage.getItem('ce_roles')) || null; },
+        setRoles(r) { localStorage.setItem('ce_roles', JSON.stringify(r)); },
+
+        getTags() { return JSON.parse(localStorage.getItem('ce_tags')) || null; },
+        setTags(t) { localStorage.setItem('ce_tags', JSON.stringify(t)); },
+
+        getChat() { return JSON.parse(localStorage.getItem('ce_chat')) || []; },
+        setChat(c) { localStorage.setItem('ce_chat', JSON.stringify(c)); },
+
+        getLogs() { return JSON.parse(localStorage.getItem('ce_logs')) || []; },
+        setLogs(l) { localStorage.setItem('ce_logs', JSON.stringify(l)); },
+        addLog(text) {
+            const list = this.getLogs();
+            list.push({ id: Date.now(), text, author: currentUser ? currentUser.username : 'system', date: new Date().toLocaleString('ru-RU') });
+            this.setLogs(list.slice(-300));
+        }
+    };
+
+    // ============ РОЛИ (по умолчанию) ============
+    let roles = DB.getRoles() || [
+        { id: 'r0', name: 'Участник', color: 'user', perms: {} },
+        { id: 'r1', name: 'EVENT_MEMBER', color: 'member', perms: { permViewApps: false } },
+        { id: 'r2', name: 'EVENT_STAFF', color: 'staff', perms: { permViewApps: true, permManageMembers: true, permManageEvents: true } },
+        { id: 'r3', name: 'EVENT_CURATOR', color: 'curator', perms: { permViewApps: true, permManageMembers: true, permManageEvents: true, permManageRoles: true, permManageTags: true } }
+    ];
+    if (!DB.getRoles()) DB.setRoles(roles);
+
+    // ============ ЗНАЧКИ (по умолчанию) ============
+    let tags = DB.getTags() || [
+        { id: 't1', name: 'FOUNDER', color: 'gold', desc: 'Основатель проекта' },
+        { id: 't2', name: 'VETERAN', color: 'purple', desc: 'Ветеран сообщества' },
+        { id: 't3', name: 'HELPER', color: 'cyan', desc: 'Помощник' }
+    ];
+    if (!DB.getTags()) DB.setTags(tags);
+
+    // ============ ИНИЦИАЛИЗАЦИЯ АДМИНОВ ============
+    function initAdmins() {
+        const users = DB.getUsers();
+        let changed = false;
+
+        if (!users.some(u => u.username === 'UserR$')) {
+            users.push({
+                id: 'CE-0001', username: 'UserR$', password: 'TwentyRay',
+                rank: 'EVENT_CURATOR', isAdmin: true, isFounder: true,
+                tags: ['t1', 't2'], warnings: 0, theme: 'dark',
+                avatar: null, registered: new Date().toLocaleDateString('ru-RU')
+            });
+            changed = true;
+        }
+
+        if (!users.some(u => u.username === 'EVENTER')) {
+            users.push({
+                id: 'CE-0002', username: 'EVENTER', password: 'GayMaster',
+                rank: 'EVENT_CURATOR', isAdmin: true, isFounder: true,
+                tags: ['t1'], warnings: 0, theme: 'dark',
+                avatar: null, registered: new Date().toLocaleDateString('ru-RU')
+            });
+            changed = true;
+        }
+
+        if (changed) DB.setUsers(users);
+    }
+    initAdmins();
+
+    let currentUser = DB.getCurrent();
+
+    // ============ ДЕМО-ИВЕНТЫ (если пусто) ============
+    if (DB.getEvents().length === 0) {
+        DB.setEvents([
+            { id: 'EV-001', title: 'Ночь в Раккун-Сити', desc: 'Классический зомби-сеттинг Resident Evil. Выживание в полицейском участке.', date: '2026-10-15T20:00', setting: 'Resident Evil', status: 'planned' },
+            { id: 'EV-002', title: 'Операция "Тихий Лес"', desc: 'Сюжетный ивент по S.T.A.L.K.E.R. Зачистка аномальной зоны.', date: '2026-10-20T19:00', setting: 'S.T.A.L.K.E.R.', status: 'planned' }
+        ]);
+    }
+
+    // ============ ДЕМО-НОВОСТИ ============
+    if (DB.getNews().length === 0) {
+        DB.setNews([
+            { id: 'N-001', title: 'Открытие сезона ивентов', text: 'Дорогие участники! Рады сообщить, что мы запускаем новый сезон ивентов в Garry\'s Mod. Готовьтесь к захватывающим сюжетам!', date: new Date().toLocaleString('ru-RU'), author: 'UserR$' },
+            { id: 'N-002', title: 'Набор в EVENT_STAFF', text: 'Ищем активных и ответственных помощников. Подавайте заявки через раздел «Заявки».', date: new Date().toLocaleString('ru-RU'), author: 'EVENTER' }
+        ]);
+    }
+
+    // ============ УТИЛИТЫ ============
+    window.showToast = function(title, message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (type || 'info');
+        const icons = { success: 'fa-check-circle', danger: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        toast.innerHTML = `
+            <div class="toast-icon"><i class="fas ${icons[type] || icons.info}"></i></div>
+            <div>
+                <div class="toast-title">${escapeHtml(title)}</div>
+                <div class="toast-msg">${escapeHtml(message)}</div>
+            </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
+    };
+
+    function escapeHtml(text) {
+        if (text === null || text === undefined) return '';
+        const d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    }
+
+    function getInitials(name) { return name ? name.charAt(0).toUpperCase() : '?'; }
+
+    function getRoleByName(name) {
+        return roles.find(r => r.name === name);
+    }
+
+    function getTagById(id) {
+        return tags.find(t => t.id === id);
+    }
+
+    function getUserTags(user) {
+        if (!user || !user.tags) return [];
+        return user.tags.map(id => getTagById(id)).filter(t => t);
+    }
+
+    function renderTagsHtml(tagIds) {
+        if (!tagIds || tagIds.length === 0) return '';
+        return tagIds.map(id => {
+            const tag = getTagById(id);
+            if (!tag) return '';
+            return `<span class="tag-pill ${tag.color}">${escapeHtml(tag.name)}</span>`;
+        }).join('');
+    }
+
+    function renderRoleBadge(rank) {
+        const role = getRoleByName(rank);
+        const cls = role ? role.color : 'user';
+        return `<span class="role-badge ${cls}">${escapeHtml(rank)}</span>`;
+    }
+
+    // ============ ПРОВЕРКИ ПРАВ ============
+    function isFounder() {
+        if (!currentUser) return false;
+        return currentUser.isFounder === true || currentUser.username === 'UserR$' || currentUser.username === 'EVENTER';
+    }
+
+    function isAdminUser() {
+        if (!currentUser) return false;
+        if (currentUser.isAdmin || isFounder()) return true;
+        const role = getRoleByName(currentUser.rank);
+        if (role && role.perms && role.perms.permAdmin) return true;
+        return false;
+    }
+
+    function hasPermission(perm) {
+        if (!currentUser) return false;
+        if (isFounder() || currentUser.isAdmin) return true;
+        const role = getRoleByName(currentUser.rank);
+        if (!role || !role.perms) return false;
+        return !!role.perms[perm];
+    }
+
+    // ============ ТЕМА ============
+    function applyTheme(theme) {
+        document.body.setAttribute('data-theme', theme || 'dark');
+        document.querySelectorAll('.theme-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.themeName === theme);
+        });
+    }
+
+    window.setTheme = function(theme) {
+        applyTheme(theme);
+        if (currentUser) {
+            const users = DB.getUsers();
+            const user = users.find(u => u.id === currentUser.id);
+            if (user) {
+                user.theme = theme;
+                DB.setUsers(users);
+                currentUser = user;
+                DB.setCurrent(user);
+            }
+        }
+        showToast('Тема изменена', 'Настройка сохранена', 'success');
+    };
+
+    window.openSettingsModal = function() {
+        applyTheme((currentUser && currentUser.theme) || 'dark');
+        document.getElementById('settingsModal').classList.remove('hidden');
+    };
+    window.closeSettingsModal = function() { document.getElementById('settingsModal').classList.add('hidden'); };
+
+    // ============ САЙДБАР ============
+    window.toggleSidebar = function() {
+        document.getElementById('sidebar').classList.toggle('open');
+    };
+</script>
+
+    // ============ АВТОРИЗАЦИЯ ============
+    const authScreen = document.getElementById('authScreen');
+    const app = document.getElementById('app');
+
+    document.getElementById('tabLogin').addEventListener('click', () => {
+        document.getElementById('tabLogin').classList.add('active');
+        document.getElementById('tabRegister').classList.remove('active');
+        document.getElementById('authLoginForm').classList.remove('hidden');
+        document.getElementById('authRegisterForm').classList.add('hidden');
+    });
+    document.getElementById('tabRegister').addEventListener('click', () => {
+        document.getElementById('tabRegister').classList.add('active');
+        document.getElementById('tabLogin').classList.remove('active');
+        document.getElementById('authRegisterForm').classList.remove('hidden');
+        document.getElementById('authLoginForm').classList.add('hidden');
+    });
+
+    document.getElementById('authLoginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('authLoginUser').value.trim();
+        const password = document.getElementById('authLoginPass').value.trim();
+        const msg = document.getElementById('authLoginMsg');
+        msg.classList.remove('hidden', 'alert-success', 'alert-danger');
+        const user = DB.getUsers().find(u => u.username === username && u.password === password);
+        if (user) {
+            currentUser = user; DB.setCurrent(user);
+            msg.textContent = '✓ ДОСТУП РАЗРЕШЁН';
+            msg.className = 'alert alert-success';
+            setTimeout(() => openApp(), 700);
+        } else {
+            msg.textContent = '✗ ОТКАЗАНО';
+            msg.className = 'alert alert-danger';
+        }
+    });
+
+    document.getElementById('authRegisterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('authRegUser').value.trim();
+        const password = document.getElementById('authRegPass').value.trim();
+        const msg = document.getElementById('authRegisterMsg');
+        msg.classList.remove('hidden', 'alert-success', 'alert-danger');
+        if (password.length < 4) { msg.textContent = '✗ Минимум 4 символа'; msg.className = 'alert alert-danger'; return; }
+        if (DB.getUsers().some(u => u.username === username)) { msg.textContent = '✗ Логин занят'; msg.className = 'alert alert-danger'; return; }
+        const usersCount = DB.getUsers().length;
+        const newUser = {
+            id: 'CE-' + String(1000 + usersCount).padStart(4, '0'),
+            username, password,
+            rank: 'Участник',
+            isAdmin: false, isFounder: false,
+            tags: [], warnings: 0, theme: 'dark', avatar: null,
+            registered: new Date().toLocaleDateString('ru-RU')
+        };
+        const users = DB.getUsers();
+        users.push(newUser);
+        DB.setUsers(users);
+        DB.addLog(`➕ Зарегистрирован новый участник: ${username}`);
+        currentUser = newUser;
+        DB.setCurrent(newUser);
+        msg.textContent = '✓ АККАУНТ СОЗДАН';
+        msg.className = 'alert alert-success';
+        setTimeout(() => openApp(), 900);
+    });
+
+    function openApp() {
+        authScreen.classList.add('hidden');
+        app.classList.add('active');
+        applyTheme((currentUser && currentUser.theme) || 'dark');
+        updateTopProfile();
+        updatePermissionsUI();
+        updateOnlineCount();
+        updateAppBadge();
+        switchSection('dashboard');
+    }
+
+    window.logout = function() {
+        if (!confirm('Выйти из аккаунта?')) return;
+        currentUser = null;
+        DB.setCurrent(null);
+        app.classList.remove('active');
+        authScreen.classList.remove('hidden');
+        document.getElementById('authLoginForm').reset();
+        document.getElementById('authRegisterForm').reset();
+        document.getElementById('authLoginMsg').classList.add('hidden');
+        document.getElementById('authRegisterMsg').classList.add('hidden');
+    };
+
+    // ============ ПРАВА UI ============
+    function updatePermissionsUI() {
+        const isAdmin = isAdminUser();
+        document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdmin));
+        document.getElementById('adminSectionTitle').style.display = isAdmin ? 'block' : 'none';
+    }
+
+    // ============ ПРОФИЛЬ ВЕРХНИЙ ============
+    function updateTopProfile() {
+        if (!currentUser) return;
+        const avatar = document.getElementById('topAvatar');
+        if (currentUser.avatar) {
+            avatar.style.backgroundImage = `url(${currentUser.avatar})`;
+            avatar.textContent = '';
+        } else {
+            avatar.style.backgroundImage = 'none';
+            avatar.textContent = getInitials(currentUser.username);
+        }
+        document.getElementById('topName').textContent = currentUser.username;
+        document.getElementById('topRank').textContent = currentUser.rank || 'Участник';
+        const tagsBox = document.getElementById('topTags');
+        if (tagsBox) tagsBox.innerHTML = renderTagsHtml(currentUser.tags);
+    }
+
+    // ============ ПРОФИЛЬ МОДАЛКА ============
+    let myAvatarData = null;
+
+    window.openMyProfileModal = function() {
+        if (!currentUser) return;
+        myAvatarData = currentUser.avatar || null;
+        document.getElementById('myProfileName').value = currentUser.username;
+        document.getElementById('myProfileRole').value = currentUser.rank;
+        const preview = document.getElementById('myProfilePreview');
+        if (currentUser.avatar) {
+            preview.style.backgroundImage = `url(${currentUser.avatar})`;
+            preview.textContent = '';
+        } else {
+            preview.style.backgroundImage = 'none';
+            preview.textContent = getInitials(currentUser.username);
+        }
+        const tagsBox = document.getElementById('myProfileTags');
+        const userTags = getUserTags(currentUser);
+        tagsBox.innerHTML = userTags.length === 0
+            ? '<span style="color:var(--text-dim); font-size:0.75rem;">Нет значков</span>'
+            : userTags.map(t => `<span class="tag-pill ${t.color}">${escapeHtml(t.name)}</span>`).join('');
+        document.getElementById('myProfileModal').classList.remove('hidden');
+    };
+
+    window.closeMyProfileModal = function() {
+        document.getElementById('myProfileModal').classList.add('hidden');
+        myAvatarData = null;
+    };
+
+    document.getElementById('myAvatarFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            myAvatarData = ev.target.result;
+            const preview = document.getElementById('myProfilePreview');
+            preview.style.backgroundImage = `url(${myAvatarData})`;
+            preview.textContent = '';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('myProfileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!currentUser) return;
+        const users = DB.getUsers();
+        const user = users.find(u => u.id === currentUser.id);
+        if (!user) return;
+        if (myAvatarData) user.avatar = myAvatarData;
+        DB.setUsers(users);
+        currentUser = user;
+        DB.setCurrent(user);
+        updateTopProfile();
+        showToast('Профиль обновлён', 'Аватарка сохранена', 'success');
+        closeMyProfileModal();
+        if (currentSection === 'chat') renderChat();
+    });
+
+    // ============ ЧАТ ============
+    let chatPollInterval = null;
+
+    function renderChat() {
+        const content = document.getElementById('content');
+        const chat = DB.getChat();
+
+        let html = chat.length === 0
+            ? `<div style="text-align:center; padding:60px 20px; color:var(--text-dim);"><i class="fas fa-comments" style="font-size:3rem; opacity:0.3; display:block; margin-bottom:16px;"></i><div style="font-weight:600;">Пока нет сообщений</div><div style="font-size:0.8rem; margin-top:6px;">Станьте первым, кто напишет!</div></div>`
+            : chat.slice(-100).map(m => {
+                const isMine = currentUser && m.authorId === currentUser.id;
+                const sender = DB.getUsers().find(u => u.id === m.authorId);
+                const senderTags = sender ? renderTagsHtml(sender.tags) : '';
+                return `
+                    <div class="chat-msg ${isMine ? 'mine' : ''}">
+                        <div class="cm-avatar" style="${m.avatar ? `background-image:url(${m.avatar});` : ''}">${!m.avatar ? getInitials(m.author) : ''}</div>
+                        <div class="cm-content">
+                            <div class="cm-author">${escapeHtml(m.author)} ${senderTags} <span style="color:var(--text-dim); font-size:0.65rem; font-weight:400;">· ${escapeHtml(m.date)}</span></div>
+                            <div class="cm-text">${escapeHtml(m.text)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Общий чат</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Общение</span></div></div>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">${html}</div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Введите сообщение..." onkeydown="if(event.key==='Enter') sendChatMessage()" />
+                    <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Отправить</button>
+                </div>
+            </div>
+        `;
+
+        const cm = document.getElementById('chatMessages');
+        if (cm) cm.scrollTop = cm.scrollHeight;
+    }
+
+    window.sendChatMessage = function() {
+        const input = document.getElementById('chatInput');
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text || !currentUser) return;
+
+        const chat = DB.getChat();
+        chat.push({
+            id: Date.now(),
+            authorId: currentUser.id,
+            author: currentUser.username,
+            avatar: currentUser.avatar || null,
+            text: text.slice(0, 500),
+            date: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+        });
+        DB.setChat(chat.slice(-200));
+        input.value = '';
+        renderChat();
+    };
+
+    // ============ ОНЛАЙН-СЧЁТЧИК ============
+    function updateOnlineCount() {
+        const users = DB.getUsers();
+        const onlineNow = users.length > 0 ? Math.max(1, Math.floor(users.length * 0.4)) : 1;
+        const el = document.getElementById('onlineCount');
+        if (el) el.textContent = onlineNow;
+    }
+    setInterval(updateOnlineCount, 30000);
+
+    // ============ БЕЙДЖ ЗАЯВОК ============
+    function updateAppBadge() {
+        if (!isAdminUser() && !hasPermission('permViewApps')) return;
+        const apps = DB.getApps().filter(a => a.status === 'pending');
+        const badge = document.getElementById('appBadgeSidebar');
+        if (!badge) return;
+        if (apps.length > 0) {
+            badge.textContent = apps.length;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+          
+    // ============ НАВИГАЦИЯ ============
+    let currentSection = 'dashboard';
+    window.switchSection = function(section) {
+        currentSection = section;
+        document.querySelectorAll('.sidebar-item').forEach(el => el.classList.toggle('active', el.dataset.section === section));
+        document.getElementById('sidebar').classList.remove('open');
+        renderSection(section);
+    };
+
+    function renderSection(section) {
+        if (section === 'dashboard') renderDashboard();
+        else if (section === 'events') renderEvents();
+        else if (section === 'news') renderNews();
+        else if (section === 'chat') renderChat();
+        else if (section === 'members') renderMembers();
+        else if (section === 'apply') renderApply();
+        else if (section === 'applications') renderApplications();
+        else if (section === 'manage_members') renderManageMembers();
+        else if (section === 'manage_events') renderManageEvents();
+        else if (section === 'manage_roles') renderManageRoles();
+        else if (section === 'manage_tags') renderManageTags();
+        else if (section === 'adminlogs') renderAdminLogs();
+        else if (section === 'rules') renderRules();
+        else if (section === 'partners') renderPartners();
+        else if (section === 'settings') renderSettings();
+    }
+
+    // ============ ГЛАВНАЯ ============
+    function renderDashboard() {
+        const content = document.getElementById('content');
+        const users = DB.getUsers();
+        const events = DB.getEvents();
+        const activeEvents = events.filter(e => e.status === 'active').length;
+        const plannedEvents = events.filter(e => e.status === 'planned').length;
+
+        content.innerHTML = `
+            <div class="hero">
+                <h2>Добро пожаловать в <span>CLARK'S EVENTS</span></h2>
+                <p>Мы — EVENT-сообщество по Garry's Mod. Проводим регулярные RP и NON-RP ивенты с разными сеттингами. Участвуй, общайся, становись частью команды!</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="switchSection('events')"><i class="fas fa-calendar-alt"></i> Смотреть ивенты</button>
+                    <button class="btn btn-ghost" onclick="switchSection('apply')"><i class="fas fa-file-signature"></i> Подать заявку</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">${users.length}</div><div class="stat-label">Участников</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-value">${activeEvents}</div><div class="stat-label">Активных ивентов</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value">${plannedEvents}</div><div class="stat-label">Запланировано</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-fire"></i></div><div class="stat-value">${events.length}</div><div class="stat-label">Всего ивентов</div></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-bullhorn"></i> О проекте</div>
+                <p style="color:var(--text-dim); line-height:1.8; font-size:0.9rem;">
+                    <strong style="color:var(--text);">CLARK'S EVENTS</strong> — это не сервер, а <strong style="color:var(--accent);">сообщество</strong>, которое участвует в поддержании адекватной игры на других серверах Garry's Mod, чаще всего с нашими спонсорами. Наша фишка — регулярные сюжетные и NON-RP ивенты с разными сеттингами и локальными отыгровками роли.
+                </p>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-star"></i> Роли в сообществе</div>
+                <div class="cards-grid">
+                    <div class="card"><div class="card-icon"><i class="fas fa-user"></i></div><h3>Участник</h3><p>Обычный игрок, участвует в открытых ивентах.</p></div>
+                    <div class="card"><div class="card-icon" style="color:#fbbf24;"><i class="fas fa-medal"></i></div><h3>EVENT_MEMBER</h3><p>Проверенный участник. Доступ к закрытым ивентам, главные роли.</p></div>
+                    <div class="card"><div class="card-icon" style="color:#ef4444;"><i class="fas fa-shield-alt"></i></div><h3>EVENT_STAFF</h3><p>Модератор ивентов, помощник CURATOR'а, доступ к админ-панели.</p></div>
+                    <div class="card"><div class="card-icon" style="color:#a78bfa;"><i class="fas fa-crown"></i></div><h3>EVENT_CURATOR</h3><p>Организатор ивентов, управляет проектом и командой.</p></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ============ ИВЕНТЫ ============
+    function renderEvents() {
+        const content = document.getElementById('content');
+        const events = DB.getEvents().slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        let list = events.length === 0
+            ? `<div style="text-align:center; padding:60px; color:var(--text-dim);"><i class="fas fa-calendar-alt" style="font-size:3rem; opacity:0.3; display:block; margin-bottom:16px;"></i>Пока нет ивентов</div>`
+            : events.map(e => `
+                <div class="event-card">
+                    <div class="event-status ${e.status}"></div>
+                    <div class="event-info">
+                        <h4>${escapeHtml(e.title)}</h4>
+                        <p>${escapeHtml(e.desc)}</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-calendar"></i> ${new Date(e.date).toLocaleString('ru-RU')}</span>
+                            <span><i class="fas fa-theater-masks"></i> ${escapeHtml(e.setting)}</span>
+                            <span><i class="fas fa-circle" style="color:${e.status === 'active' ? '#10b981' : e.status === 'planned' ? '#06b6d4' : '#8a8a9a'}; font-size:0.5rem;"></i> ${e.status === 'active' ? 'Идёт сейчас' : e.status === 'planned' ? 'Запланирован' : 'Завершён'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Ивенты</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Расписание</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-calendar-alt"></i> Ближайшие события (${events.length})</div>
+                ${list}
+            </div>
+        `;
+    }
+
+    // ============ НОВОСТИ ============
+    function renderNews() {
+        const content = document.getElementById('content');
+        const news = DB.getNews().slice().reverse();
+        const canPost = isAdminUser() || hasPermission('permManageEvents');
+
+        let list = news.length === 0
+            ? `<div style="text-align:center; padding:60px; color:var(--text-dim);">Пока нет новостей</div>`
+            : news.map(n => `
+                <div class="panel" style="margin-bottom:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:start; gap:16px; flex-wrap:wrap; margin-bottom:12px;">
+                        <h3 style="font-family:'Space Grotesk'; font-size:1.1rem; font-weight:700;">${escapeHtml(n.title)}</h3>
+                        <span style="font-size:0.7rem; color:var(--text-dim);">${escapeHtml(n.date)} · ${escapeHtml(n.author)}</span>
+                    </div>
+                    <p style="color:var(--text-dim); font-size:0.9rem; line-height:1.7;">${escapeHtml(n.text)}</p>
+                </div>
+            `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Новости</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Анонсы</span></div></div>
+            ${canPost ? `
+                <div class="panel">
+                    <div class="panel-title"><i class="fas fa-plus"></i> Опубликовать новость</div>
+                    <div class="form-group"><input type="text" id="newsTitle" placeholder="Заголовок" /></div>
+                    <div class="form-group"><textarea id="newsText" rows="4" placeholder="Текст новости..."></textarea></div>
+                    <button class="btn btn-primary" onclick="publishNews()"><i class="fas fa-paper-plane"></i> Опубликовать</button>
+                </div>
+            ` : ''}
+            <div>${list}</div>
+        `;
+    }
+
+    window.publishNews = function() {
+        if (!isAdminUser() && !hasPermission('permManageEvents')) { showToast('Отказано', '', 'danger'); return; }
+        const title = document.getElementById('newsTitle').value.trim();
+        const text = document.getElementById('newsText').value.trim();
+        if (!title || !text) { showToast('Ошибка', 'Заполните все поля', 'warning'); return; }
+        const news = DB.getNews();
+        news.push({ id: 'N-' + Date.now(), title, text, date: new Date().toLocaleString('ru-RU'), author: currentUser.username });
+        DB.setNews(news);
+        DB.addLog(`📰 ${currentUser.username} опубликовал новость: ${title}`);
+        showToast('Опубликовано', title, 'success');
+        renderNews();
+    };
+
+    // ============ УЧАСТНИКИ ============
+    function renderMembers() {
+        const content = document.getElementById('content');
+        const users = DB.getUsers().slice().sort((a, b) => {
+            const order = ['EVENT_CURATOR', 'EVENT_STAFF', 'EVENT_MEMBER', 'Участник'];
+            return order.indexOf(a.rank) - order.indexOf(b.rank);
+        });
+
+        let list = users.map(u => `
+            <div class="member-card">
+                ${u.avatar ? `<div class="member-avatar" style="background-image:url(${u.avatar});"></div>` : `<div class="member-avatar">${getInitials(u.username)}</div>`}
+                <div class="member-info">
+                    <div class="member-name">
+                        ${escapeHtml(u.username)}
+                        ${renderRoleBadge(u.rank)}
+                        ${renderTagsHtml(u.tags)}
+                    </div>
+                    <div class="member-meta">ID: ${escapeHtml(u.id)} · Регистрация: ${escapeHtml(u.registered || '—')}</div>
+                </div>
+            </div>
+        `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Участники</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Сообщество</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-users"></i> Всего: ${users.length}</div>
+                ${list}
+            </div>
+        `;
+    }
+
+    // ============ ЗАЯВКИ (форма) ============
+    function renderApply() {
+        const content = document.getElementById('content');
+        const myApps = DB.getApps().filter(a => a.userId === currentUser.id);
+
+        let myAppsHtml = myApps.length > 0
+            ? myApps.map(a => `
+                <div class="application-card">
+                    <h4>Заявка на ${escapeHtml(a.type)} <span class="role-badge ${a.status === 'approved' ? 'member' : a.status === 'rejected' ? 'staff' : 'user'}">${a.status === 'approved' ? 'Одобрена' : a.status === 'rejected' ? 'Отклонена' : 'На рассмотрении'}</span></h4>
+                    <div class="application-field"><span class="label">Дата:</span> ${escapeHtml(a.date)}</div>
+                </div>
+            `).join('')
+            : '<p style="color:var(--text-dim); font-size:0.9rem;">У вас пока нет заявок.</p>';
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Заявки</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Вступление</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-file-signature"></i> Подать заявку</div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon" style="color:#fbbf24;"><i class="fas fa-medal"></i></div>
+                        <h3>EVENT_MEMBER</h3>
+                        <p>Проверенный участник. Доступ к закрытым ивентам, главные роли, приоритет в заявках на STAFF.</p>
+                        <button class="btn btn-gold btn-full" style="margin-top:14px;" onclick="openApplyMemberModal()">Подать заявку</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="color:#ef4444;"><i class="fas fa-shield-alt"></i></div>
+                        <h3>EVENT_STAFF</h3>
+                        <p>Модератор ивентов, помощник организаторов. Доступ к админ-панели.</p>
+                        <button class="btn btn-red btn-full" style="margin-top:14px;" onclick="openApplyStaffModal()">Подать заявку</button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-list"></i> Мои заявки</div>
+                ${myAppsHtml}
+            </div>
+        `;
+    }
+
+    window.openApplyMemberModal = function() { document.getElementById('applyMemberModal').classList.remove('hidden'); };
+    window.closeApplyMemberModal = function() { document.getElementById('applyMemberModal').classList.add('hidden'); };
+    window.openApplyStaffModal = function() { document.getElementById('applyStaffModal').classList.remove('hidden'); };
+    window.closeApplyStaffModal = function() { document.getElementById('applyStaffModal').classList.add('hidden'); };
+
+    document.getElementById('applyMemberForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const apps = DB.getApps();
+        apps.push({
+            id: 'APP-' + Date.now(),
+            userId: currentUser.id,
+            username: currentUser.username,
+            type: 'EVENT_MEMBER',
+            age: document.getElementById('applyAge').value,
+            steam: document.getElementById('applySteam').value,
+            exp: document.getElementById('applyExp').value,
+            why: document.getElementById('applyWhy').value,
+            status: 'pending',
+            date: new Date().toLocaleString('ru-RU')
+        });
+        DB.setApps(apps);
+        DB.addLog(`📝 ${currentUser.username} подал заявку на EVENT_MEMBER`);
+        showToast('Заявка отправлена', 'Ожидайте рассмотрения', 'success');
+        closeApplyMemberModal();
+        this.reset();
+        updateAppBadge();
+        renderApply();
+    });
+
+    document.getElementById('applyStaffForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const apps = DB.getApps();
+        apps.push({
+            id: 'APP-' + Date.now(),
+            userId: currentUser.id,
+            username: currentUser.username,
+            type: 'EVENT_STAFF',
+            age: document.getElementById('applyStaffAge').value,
+            steam: document.getElementById('applyStaffSteam').value,
+            exp: document.getElementById('applyStaffExp').value,
+            why: document.getElementById('applyStaffWhy').value,
+            status: 'pending',
+            date: new Date().toLocaleString('ru-RU')
+        });
+        DB.setApps(apps);
+        DB.addLog(`📝 ${currentUser.username} подал заявку на EVENT_STAFF`);
+        showToast('Заявка отправлена', 'Ожидайте рассмотрения', 'success');
+        closeApplyStaffModal();
+        this.reset();
+        updateAppBadge();
+        renderApply();
+    });
+
+    // ============ ОЧЕРЕДЬ ЗАЯВОК (админ) ============
+    function renderApplications() {
+        if (!isAdminUser() && !hasPermission('permViewApps')) {
+            document.getElementById('content').innerHTML = '<div class="panel"><div class="panel-title">Отказано</div></div>';
+            return;
+        }
+        const content = document.getElementById('content');
+        const apps = DB.getApps().slice().reverse();
+
+        let list = apps.length === 0
+            ? '<div style="text-align:center; padding:60px; color:var(--text-dim);">Очередь пуста</div>'
+            : apps.map(a => `
+                <div class="application-card">
+                    <h4>
+                        ${escapeHtml(a.username)}
+                        <span class="role-badge ${a.type === 'EVENT_MEMBER' ? 'member' : 'staff'}">${escapeHtml(a.type)}</span>
+                        <span class="role-badge ${a.status === 'approved' ? 'member' : a.status === 'rejected' ? 'staff' : 'user'}">${a.status === 'approved' ? 'Одобрена' : a.status === 'rejected' ? 'Отклонена' : 'На рассмотрении'}</span>
+                    </h4>
+                    <div class="application-field"><span class="label">Возраст:</span> ${escapeHtml(a.age)}</div>
+                    <div class="application-field"><span class="label">Steam / Discord:</span> ${escapeHtml(a.steam)}</div>
+                    <div class="application-field"><span class="label">Опыт:</span> ${escapeHtml(a.exp || '—')}</div>
+                    <div class="application-field"><span class="label">Почему:</span> ${escapeHtml(a.why)}</div>
+                    <div class="application-field"><span class="label">Дата:</span> ${escapeHtml(a.date)}</div>
+                    ${a.status === 'pending' ? `
+                        <div class="application-actions">
+                            <button class="btn btn-green btn-sm" onclick="approveApp('${a.id}')"><i class="fas fa-check"></i> Одобрить</button>
+                            <button class="btn btn-red btn-sm" onclick="rejectApp('${a.id}')"><i class="fas fa-times"></i> Отклонить</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Очередь заявок</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Админ</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-inbox"></i> Всего заявок: ${apps.length}</div>
+                ${list}
+            </div>
+        `;
+        updateAppBadge();
+    }
+
+    window.approveApp = function(id) {
+        if (!isAdminUser() && !hasPermission('permManageMembers')) return;
+        const apps = DB.getApps();
+        const app = apps.find(a => a.id === id);
+        if (!app) return;
+        app.status = 'approved';
+        DB.setApps(apps);
+
+        const users = DB.getUsers();
+        const user = users.find(u => u.id === app.userId);
+        if (user) {
+            user.rank = app.type;
+            if (app.type === 'EVENT_STAFF' && !user.tags) user.tags = [];
+            if (app.type === 'EVENT_STAFF' && !user.tags.includes('t3')) user.tags.push('t3');
+            DB.setUsers(users);
+        }
+        DB.addLog(`✅ ${currentUser.username} одобрил заявку ${app.username} на ${app.type}`);
+        showToast('Одобрено', `${app.username} → ${app.type}`, 'success');
+        updateAppBadge();
+        renderApplications();
+    };
+
+    window.rejectApp = function(id) {
+        if (!isAdminUser() && !hasPermission('permManageMembers')) return;
+        const apps = DB.getApps();
+        const app = apps.find(a => a.id === id);
+        if (!app) return;
+        app.status = 'rejected';
+        DB.setApps(apps);
+        DB.addLog(`❌ ${currentUser.username} отклонил заявку ${app.username}`);
+        showToast('Отклонено', app.username, 'danger');
+        updateAppBadge();
+        renderApplications();
+    };
+
+    // ============ ПРАВИЛА ============
+    function renderRules() {
+        document.getElementById('content').innerHTML = `
+            <div class="content-header"><h1>Правила сообщества</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Устав</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-comments"></i> Общение и коммуникация</div>
+                <ul style="color:var(--text-dim); font-size:0.9rem; line-height:1.9; padding-left:20px;">
+                    <li>Уважайте других участников: будьте вежливы со всеми.</li>
+                    <li>Запрещены призывы к насилию, разжигание ненависти, буллинг.</li>
+                    <li>Конструктивная критика приветствуется, оскорбления — нет.</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-ban"></i> Запрещённый контент</div>
+                <ul style="color:var(--text-dim); font-size:0.9rem; line-height:1.9; padding-left:20px;">
+                    <li>Строго запрещён NSFW-контент (18+).</li>
+                    <li>Аватарки и никнеймы должны быть приличными.</li>
+                    <li>Наказание: PERM-ban по решению администрации.</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-bullhorn"></i> Спам, флуд, реклама</div>
+                <ul style="color:var(--text-dim); font-size:0.9rem; line-height:1.9; padding-left:20px;">
+                    <li>Не засоряйте чат бесконечными сообщениями, эмодзи, капсом.</li>
+                    <li>Реклама сторонних проектов — только с согласия администрации.</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-microphone"></i> Войс-чат</div>
+                <ul style="color:var(--text-dim); font-size:0.9rem; line-height:1.9; padding-left:20px;">
+                    <li>Soundpad / Voicechanger — не запрещены, но выключайте по просьбе.</li>
+                    <li>Используйте Push-to-Talk, если у вас шумный микрофон.</li>
+                </ul>
+            </div>
+        `;
+    }
+
+    // ============ ПАРТНЁРЫ ============
+    function renderPartners() {
+        document.getElementById('content').innerHTML = `
+            <div class="content-header"><h1>Партнёры</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Друзья проекта</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-handshake"></i> Наши партнёры</div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-city"></i></div>
+                        <h3>ZETA COLLECTIVE "Z-CITY 67 RP"</h3>
+                        <p>CEO: @paich9045, @informal1337</p>
+                        <a href="https://discord.gg/dsGbf2NpTf" target="_blank" class="btn btn-primary btn-sm" style="margin-top:12px;"><i class="fab fa-discord"></i> Discord</a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h3>Sentinel RP</h3>
+                        <p>CEO: @tarfix355</p>
+                        <a href="https://discord.gg/vn3swCwEQD" target="_blank" class="btn btn-primary btn-sm" style="margin-top:12px;"><i class="fab fa-discord"></i> Discord</a>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-heart"></i> Поддержать проект</div>
+                <p style="color:var(--text-dim); font-size:0.9rem; line-height:1.8;">
+                    Основная поддержка — ваше участие в ивентах и жизни проекта. Если есть возможность поддержать финансово — пишите <strong style="color:var(--accent);">@immedox2</strong> в ЛС.
+                </p>
+            </div>
+        `;
+    }
+
+    // ============ НАСТРОЙКИ ============
+    function renderSettings() {
+        const theme = (currentUser && currentUser.theme) || 'dark';
+        document.getElementById('content').innerHTML = `
+            <div class="content-header"><h1>Настройки</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Дизайн</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-palette"></i> Цветовая тема</div>
+                <div class="theme-grid">
+                    <div class="theme-item ${theme === 'dark' ? 'active' : ''}" data-theme-name="dark" onclick="setTheme('dark')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #7c3aed, #06b6d4);"><i class="fas fa-moon"></i></div>
+                        <div class="theme-name">Тёмная (Violet)</div>
+                        <div class="theme-desc">#7c3aed / #06b6d4</div>
+                    </div>
+                    <div class="theme-item ${theme === 'light' ? 'active' : ''}" data-theme-name="light" onclick="setTheme('light')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #a78bfa, #22d3ee); color: #000;"><i class="fas fa-sun"></i></div>
+                        <div class="theme-name">Светлая</div>
+                        <div class="theme-desc">#ffffff / #7c3aed</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+          
+    // ============ УПРАВЛЕНИЕ УЧАСТНИКАМИ ============
+    function renderManageMembers() {
+        if (!isAdminUser() && !hasPermission('permManageMembers')) {
+            document.getElementById('content').innerHTML = '<div class="panel"><div class="panel-title">Отказано</div></div>';
+            return;
+        }
+        const content = document.getElementById('content');
+        const users = DB.getUsers();
+
+        let list = users.map(u => `
+            <div class="member-card">
+                ${u.avatar ? `<div class="member-avatar" style="background-image:url(${u.avatar});"></div>` : `<div class="member-avatar">${getInitials(u.username)}</div>`}
+                <div class="member-info">
+                    <div class="member-name">
+                        ${escapeHtml(u.username)}
+                        ${renderRoleBadge(u.rank)}
+                        ${renderTagsHtml(u.tags)}
+                        ${u.isFounder ? '<span class="role-badge founder">FOUNDER</span>' : ''}
+                    </div>
+                    <div class="member-meta">ID: ${escapeHtml(u.id)} · Регистрация: ${escapeHtml(u.registered || '—')}</div>
+                </div>
+                <div class="member-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="editMember('${u.id}')"><i class="fas fa-user-edit"></i></button>
+                    <button class="btn btn-gold btn-sm" onclick="changePassword('${u.id}')" title="Сменить пароль"><i class="fas fa-key"></i></button>
+                    ${u.username === 'UserR$' || u.username === 'EVENTER' ? '' : `<button class="btn btn-red btn-sm" onclick="deleteMember('${u.id}')"><i class="fas fa-trash"></i></button>`}
+                </div>
+            </div>
+        `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Управление участниками</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Админ</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-user-cog"></i> Всего: ${users.length}</div>
+                ${list}
+            </div>
+        `;
+    }
+
+    let editMemberAvatarData = null;
+
+    window.editMember = function(id) {
+        const user = DB.getUsers().find(u => u.id === id);
+        if (!user) return;
+        editMemberAvatarData = user.avatar || null;
+        document.getElementById('editMemberId').value = id;
+        document.getElementById('editMemberName').value = user.username;
+        const preview = document.getElementById('editMemberPreview');
+        if (user.avatar) {
+            preview.style.backgroundImage = `url(${user.avatar})`;
+            preview.textContent = '';
+        } else {
+            preview.style.backgroundImage = 'none';
+            preview.textContent = getInitials(user.username);
+        }
+        document.getElementById('editMemberRole').innerHTML = roles.map(r =>
+            `<option value="${r.name}" ${r.name === user.rank ? 'selected' : ''}>${r.name}</option>`
+        ).join('');
+
+        const tagsBox = document.getElementById('editMemberTags');
+        const userTags = user.tags || [];
+        tagsBox.innerHTML = tags.length === 0
+            ? '<div style="color:var(--text-dim); font-size:0.75rem;">Нет значков</div>'
+            : tags.map(t => `
+                <label style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; cursor:pointer;">
+                    <input type="checkbox" value="${t.id}" ${userTags.includes(t.id) ? 'checked' : ''} style="width:auto; cursor:pointer;" />
+                    <span class="tag-pill ${t.color}">${escapeHtml(t.name)}</span>
+                </label>
+            `).join('');
+
+        document.getElementById('editMemberModal').classList.remove('hidden');
+    };
+
+    window.closeEditMemberModal = function() {
+        document.getElementById('editMemberModal').classList.add('hidden');
+        editMemberAvatarData = null;
+    };
+
+    document.getElementById('editMemberAvatar').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            editMemberAvatarData = ev.target.result;
+            const preview = document.getElementById('editMemberPreview');
+            preview.style.backgroundImage = `url(${editMemberAvatarData})`;
+            preview.textContent = '';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('editMemberForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editMemberId').value;
+        const newName = document.getElementById('editMemberName').value.trim();
+        const newRole = document.getElementById('editMemberRole').value;
+        if (!newName) return;
+        const users = DB.getUsers();
+        const user = users.find(u => u.id === id);
+        if (!user) return;
+        if (users.some(u => u.username === newName && u.id !== id)) {
+            showToast('Ошибка', 'Логин занят', 'danger');
+            return;
+        }
+        user.username = newName;
+        user.rank = newRole;
+        if (editMemberAvatarData) user.avatar = editMemberAvatarData;
+
+        const checkedTags = [];
+        document.querySelectorAll('#editMemberTags input[type="checkbox"]:checked').forEach(cb => checkedTags.push(cb.value));
+        user.tags = checkedTags;
+
+        DB.setUsers(users);
+        if (currentUser && currentUser.id === id) {
+            currentUser = user;
+            DB.setCurrent(user);
+            updateTopProfile();
+        }
+        DB.addLog(`✏️ ${currentUser.username} изменил участника: ${newName}`);
+        showToast('Обновлено', `${newName} → ${newRole}`, 'success');
+        closeEditMemberModal();
+        renderManageMembers();
+    });
+
+    window.changePassword = function(id) {
+        if (!isAdminUser() && !hasPermission('permManageMembers')) return;
+        const users = DB.getUsers();
+        const user = users.find(u => u.id === id);
+        if (!user) return;
+        const newPass = prompt(`Новый пароль для "${user.username}":\n(минимум 4 символа)`, '');
+        if (!newPass) return;
+        if (newPass.length < 4) {
+            showToast('Ошибка', 'Минимум 4 символа', 'danger');
+            return;
+        }
+        user.password = newPass;
+        DB.setUsers(users);
+        DB.addLog(`🔑 ${currentUser.username} сменил пароль: ${user.username}`);
+        showToast('Пароль изменён', `${user.username}: ${newPass}`, 'success');
+    };
+
+    window.deleteMember = function(id) {
+        if (!isAdminUser() && !hasPermission('permManageMembers')) return;
+        const users = DB.getUsers();
+        const user = users.find(u => u.id === id);
+        if (!user) return;
+        if (user.isFounder) { showToast('Отказано', 'Нельзя удалить основателя', 'danger'); return; }
+        if (currentUser.id === id) { showToast('Отказано', 'Нельзя удалить себя', 'danger'); return; }
+        if (!confirm(`Удалить участника "${user.username}"?`)) return;
+        DB.setUsers(users.filter(u => u.id !== id));
+        DB.addLog(`🗑️ ${currentUser.username} удалил участника: ${user.username}`);
+        showToast('Удалён', user.username, 'danger');
+        renderManageMembers();
+    };
+
+    // ============ УПРАВЛЕНИЕ ИВЕНТАМИ ============
+    function renderManageEvents() {
+        if (!isAdminUser() && !hasPermission('permManageEvents')) {
+            document.getElementById('content').innerHTML = '<div class="panel"><div class="panel-title">Отказано</div></div>';
+            return;
+        }
+        const content = document.getElementById('content');
+        const events = DB.getEvents().slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        let list = events.length === 0
+            ? '<div style="text-align:center; padding:40px; color:var(--text-dim);">Нет ивентов</div>'
+            : events.map(e => `
+                <div class="event-card">
+                    <div class="event-status ${e.status}"></div>
+                    <div class="event-info">
+                        <h4>${escapeHtml(e.title)}</h4>
+                        <p>${escapeHtml(e.desc)}</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-calendar"></i> ${new Date(e.date).toLocaleString('ru-RU')}</span>
+                            <span><i class="fas fa-theater-masks"></i> ${escapeHtml(e.setting)}</span>
+                        </div>
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="editEvent('${e.id}')"><i class="fas fa-pen"></i></button>
+                        <button class="btn btn-red btn-sm" onclick="deleteEvent('${e.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Управление ивентами</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Админ</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-calendar-plus"></i> Всего: ${events.length}</div>
+                ${list}
+                <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="openEventModal()"><i class="fas fa-plus"></i> Создать ивент</button>
+            </div>
+        `;
+    }
+
+    window.openEventModal = function(editId) {
+        const title = document.getElementById('eventModalTitle');
+        document.getElementById('eventForm').reset();
+        document.getElementById('eventEditId').value = '';
+        if (editId) {
+            const ev = DB.getEvents().find(e => e.id === editId);
+            if (!ev) return;
+            document.getElementById('eventEditId').value = ev.id;
+            document.getElementById('eventTitle').value = ev.title;
+            document.getElementById('eventDesc').value = ev.desc;
+            document.getElementById('eventDate').value = ev.date;
+            document.getElementById('eventSetting').value = ev.setting;
+            document.getElementById('eventStatus').value = ev.status;
+            title.innerHTML = '<i class="fas fa-pen"></i> Редактировать ивент';
+        } else {
+            title.innerHTML = '<i class="fas fa-calendar-plus"></i> Создать ивент';
+        }
+        document.getElementById('eventModal').classList.remove('hidden');
+    };
+
+    window.closeEventModal = function() { document.getElementById('eventModal').classList.add('hidden'); };
+    window.editEvent = function(id) { window.openEventModal(id); };
+
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const editId = document.getElementById('eventEditId').value;
+        const title = document.getElementById('eventTitle').value.trim();
+        const desc = document.getElementById('eventDesc').value.trim();
+        const date = document.getElementById('eventDate').value;
+        const setting = document.getElementById('eventSetting').value;
+        const status = document.getElementById('eventStatus').value;
+        if (!title || !desc || !date) { showToast('Ошибка', 'Заполните поля', 'warning'); return; }
+
+        const events = DB.getEvents();
+        if (editId) {
+            const ev = events.find(e => e.id === editId);
+            if (ev) { ev.title = title; ev.desc = desc; ev.date = date; ev.setting = setting; ev.status = status; }
+            showToast('Обновлено', title, 'success');
+        } else {
+            events.push({ id: 'EV-' + Date.now(), title, desc, date, setting, status });
+            showToast('Создано', title, 'success');
+        }
+        DB.setEvents(events);
+        DB.addLog(`📅 ${currentUser.username} ${editId ? 'изменил' : 'создал'} ивент: ${title}`);
+        closeEventModal();
+        renderManageEvents();
+    });
+
+    window.deleteEvent = function(id) {
+        const ev = DB.getEvents().find(e => e.id === id);
+        if (!ev) return;
+        if (!confirm(`Удалить ивент "${ev.title}"?`)) return;
+        DB.setEvents(DB.getEvents().filter(e => e.id !== id));
+        DB.addLog(`🗑️ ${currentUser.username} удалил ивент: ${ev.title}`);
+        showToast('Удалён', ev.title, 'danger');
+        renderManageEvents();
+    };
+
+    // ============ УПРАВЛЕНИЕ РОЛЯМИ ============
+    function renderManageRoles() {
+        if (!isAdminUser() && !hasPermission('permManageRoles')) {
+            document.getElementById('content').innerHTML = '<div class="panel"><div class="panel-title">Отказано</div></div>';
+            return;
+        }
+        const content = document.getElementById('content');
+        let list = roles.map(r => {
+            const permList = [];
+            if (r.perms.permAdmin) permList.push('👑 Админ');
+            if (r.perms.permViewApps) permList.push('Заявки');
+            if (r.perms.permManageMembers) permList.push('Участники');
+            if (r.perms.permManageEvents) permList.push('Ивенты');
+            if (r.perms.permManageRoles) permList.push('Роли');
+            if (r.perms.permManageTags) permList.push('Значки');
+            return `
+                <div class="member-card">
+                    <span class="role-badge ${r.color}">${escapeHtml(r.name)}</span>
+                    <div class="member-info">
+                        <div class="member-meta">Права: ${permList.length ? permList.join(', ') : '—'}</div>
+                    </div>
+                    <div class="member-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="editRole('${r.id}')"><i class="fas fa-pen"></i></button>
+                        <button class="btn btn-red btn-sm" onclick="deleteRole('${r.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Роли</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Админ</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-user-shield"></i> Всего: ${roles.length}</div>
+                ${list}
+                <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="openRoleModal()"><i class="fas fa-plus"></i> Создать роль</button>
+            </div>
+        `;
+    }
+
+    window.openRoleModal = function(editId) {
+        const title = document.getElementById('roleModalTitle');
+        document.getElementById('roleForm').reset();
+        document.getElementById('roleEditId').value = '';
+        if (editId) {
+            const role = roles.find(r => r.id === editId);
+            if (!role) return;
+            document.getElementById('roleEditId').value = role.id;
+            document.getElementById('roleName').value = role.name;
+            document.getElementById('roleColor').value = role.color;
+            document.getElementById('permViewApps').checked = !!role.perms.permViewApps;
+            document.getElementById('permManageMembers').checked = !!role.perms.permManageMembers;
+            document.getElementById('permManageEvents').checked = !!role.perms.permManageEvents;
+            document.getElementById('permManageRoles').checked = !!role.perms.permManageRoles;
+            document.getElementById('permManageTags').checked = !!role.perms.permManageTags;
+            document.getElementById('permAdmin').checked = !!role.perms.permAdmin;
+            title.innerHTML = '<i class="fas fa-user-shield"></i> Редактировать роль';
+        } else {
+            title.innerHTML = '<i class="fas fa-user-shield"></i> Создать роль';
+        }
+        document.getElementById('roleModal').classList.remove('hidden');
+    };
+
+    window.closeRoleModal = function() { document.getElementById('roleModal').classList.add('hidden'); };
+    window.editRole = function(id) { window.openRoleModal(id); };
+
+    document.getElementById('roleForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const editId = document.getElementById('roleEditId').value;
+        const name = document.getElementById('roleName').value.trim();
+        const color = document.getElementById('roleColor').value;
+        const perms = {
+            permViewApps: document.getElementById('permViewApps').checked,
+            permManageMembers: document.getElementById('permManageMembers').checked,
+            permManageEvents: document.getElementById('permManageEvents').checked,
+            permManageRoles: document.getElementById('permManageRoles').checked,
+            permManageTags: document.getElementById('permManageTags').checked,
+            permAdmin: document.getElementById('permAdmin').checked
+        };
+        if (!name) return;
+
+        if (editId) {
+            const role = roles.find(r => r.id === editId);
+            if (role) { role.name = name; role.color = color; role.perms = perms; }
+            showToast('Обновлено', name, 'success');
+        } else {
+            roles.push({ id: 'r' + Date.now(), name, color, perms });
+            showToast('Создано', name, 'success');
+        }
+        DB.setRoles(roles);
+        DB.addLog(`🛡️ ${currentUser.username} ${editId ? 'изменил' : 'создал'} роль: ${name}`);
+        closeRoleModal();
+        renderManageRoles();
+    });
+
+    window.deleteRole = function(id) {
+        const role = roles.find(r => r.id === id);
+        if (!role) return;
+        if (['Участник', 'EVENT_CURATOR', 'EVENT_STAFF', 'EVENT_MEMBER'].includes(role.name)) {
+            showToast('Отказано', 'Системную роль нельзя удалить', 'danger');
+            return;
+        }
+        if (!confirm(`Удалить роль "${role.name}"?`)) return;
+        roles = roles.filter(r => r.id !== id);
+        DB.setRoles(roles);
+        DB.addLog(`🗑️ ${currentUser.username} удалил роль: ${role.name}`);
+        showToast('Удалено', role.name, 'danger');
+        renderManageRoles();
+    };
+
+    // ============ УПРАВЛЕНИЕ ЗНАЧКАМИ ============
+    function renderManageTags() {
+        if (!isAdminUser() && !hasPermission('permManageTags')) {
+            document.getElementById('content').innerHTML = '<div class="panel"><div class="panel-title">Отказано</div></div>';
+            return;
+        }
+        const content = document.getElementById('content');
+        let list = tags.map(t => `
+            <div class="member-card">
+                <span class="tag-pill ${t.color}" style="padding:6px 14px; font-size:0.75rem;">${escapeHtml(t.name)}</span>
+                <div class="member-info">
+                    <div class="member-meta">${escapeHtml(t.desc || 'Без описания')}</div>
+                </div>
+                <div class="member-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="editTag('${t.id}')"><i class="fas fa-pen"></i></button>
+                    <button class="btn btn-red btn-sm" onclick="deleteTag('${t.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Значки</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Админ</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-tags"></i> Всего: ${tags.length}</div>
+                ${list}
+                <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="openTagModal()"><i class="fas fa-plus"></i> Создать значок</button>
+            </div>
+        `;
+    }
+
+    window.openTagModal = function(editId) {
+        const title = document.getElementById('tagModalTitle');
+        document.getElementById('tagForm').reset();
+        document.getElementById('tagEditId').value = '';
+        if (editId) {
+            const tag = tags.find(t => t.id === editId);
+            if (!tag) return;
+            document.getElementById('tagEditId').value = tag.id;
+            document.getElementById('tagName').value = tag.name;
+            document.getElementById('tagColor').value = tag.color;
+            document.getElementById('tagDesc').value = tag.desc || '';
+            title.innerHTML = '<i class="fas fa-tags"></i> Редактировать значок';
+        } else {
+            title.innerHTML = '<i class="fas fa-tags"></i> Создать значок';
+        }
+        document.getElementById('tagModal').classList.remove('hidden');
+    };
+
+    window.closeTagModal = function() { document.getElementById('tagModal').classList.add('hidden'); };
+    window.editTag = function(id) { window.openTagModal(id); };
+
+    document.getElementById('tagForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const editId = document.getElementById('tagEditId').value;
+        const name = document.getElementById('tagName').value.trim().toUpperCase();
+        const color = document.getElementById('tagColor').value;
+        const desc = document.getElementById('tagDesc').value.trim();
+        if (!name) return;
+
+        if (editId) {
+            const tag = tags.find(t => t.id === editId);
+            if (tag) { tag.name = name; tag.color = color; tag.desc = desc; }
+            showToast('Обновлено', name, 'success');
+        } else {
+            if (tags.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+                showToast('Ошибка', 'Значок существует', 'danger');
+                return;
+            }
+            tags.push({ id: 't' + Date.now(), name, color, desc });
+            showToast('Создано', name, 'success');
+        }
+        DB.setTags(tags);
+        DB.addLog(`🏷️ ${currentUser.username} ${editId ? 'изменил' : 'создал'} значок: ${name}`);
+        closeTagModal();
+        renderManageTags();
+    });
+
+    window.deleteTag = function(id) {
+        const tag = tags.find(t => t.id === id);
+        if (!tag) return;
+        if (!confirm(`Удалить значок "${tag.name}"?`)) return;
+        tags = tags.filter(t => t.id !== id);
+        DB.setTags(tags);
+        // Убираем значок у всех юзеров
+        const users = DB.getUsers();
+        users.forEach(u => {
+            if (u.tags && u.tags.includes(id)) u.tags = u.tags.filter(tid => tid !== id);
+        });
+        DB.setUsers(users);
+        if (currentUser) { currentUser = DB.getUsers().find(u => u.id === currentUser.id) || currentUser; updateTopProfile(); }
+        DB.addLog(`🗑️ ${currentUser.username} удалил значок: ${tag.name}`);
+        showToast('Удалено', tag.name, 'danger');
+        renderManageTags();
+    };
+
+    // ============ ЛОГИ ============
+    function renderAdminLogs() {
+        if (!isAdminUser()) {
+            document.getElementById('content').innerHTML = '<div class="panel"><div class="panel-title">Отказано</div></div>';
+            return;
+        }
+        const content = document.getElementById('content');
+        const logs = DB.getLogs().slice().reverse();
+
+        let list = logs.length === 0
+            ? '<div style="text-align:center; padding:40px; color:var(--text-dim);">Логов нет</div>'
+            : logs.map(l => `
+                <div class="member-card" style="padding:14px 18px;">
+                    <div style="width:36px; height:36px; border-radius:10px; background:var(--gradient); display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0;"><i class="fas fa-shield-alt"></i></div>
+                    <div class="member-info">
+                        <div style="font-size:0.85rem;">${escapeHtml(l.text)}</div>
+                        <div class="member-meta">${escapeHtml(l.author)} · ${escapeHtml(l.date)}</div>
+                    </div>
+                </div>
+            `).join('');
+
+        content.innerHTML = `
+            <div class="content-header"><h1>Логи</h1><div class="breadcrumb">// CLARK'S EVENTS · <span>Админ</span></div></div>
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-terminal"></i> Всего: ${logs.length}</div>
+                <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+                    <button class="btn btn-red btn-sm" onclick="clearLogs()"><i class="fas fa-trash"></i> Очистить</button>
+                    <button class="btn btn-green btn-sm" onclick="exportUsers()"><i class="fas fa-download"></i> Экспорт БД</button>
+                    <button class="btn btn-gold btn-sm" onclick="importUsers()"><i class="fas fa-upload"></i> Импорт БД</button>
+                </div>
+                ${list}
+            </div>
+        `;
+    }
+
+    window.clearLogs = function() {
+        if (!isAdminUser()) return;
+        if (!confirm('Очистить все логи?')) return;
+        DB.setLogs([]);
+        showToast('Очищено', '', 'warning');
+        renderAdminLogs();
+    };
+
+    window.exportUsers = function() {
+        if (!isAdminUser()) return;
+        const data = {
+            exportDate: new Date().toLocaleString('ru-RU'),
+            totalUsers: DB.getUsers().length,
+            users: DB.getUsers(),
+            events: DB.getEvents(),
+            news: DB.getNews(),
+            roles: roles,
+            tags: tags
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `clarks_events_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        showToast('Экспорт готов', `${data.users.length} участников`, 'success');
+    };
+
+    window.importUsers = function() {
+        if (!isAdminUser()) return;
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (!data.users) throw new Error('Неверный формат');
+                    if (!confirm(`Импортировать ${data.users.length} участников?\nТекущие данные будут заменены.`)) return;
+                    DB.setUsers(data.users);
+                    if (data.events) DB.setEvents(data.events);
+                    if (data.news) DB.setNews(data.news);
+                    if (data.roles) { roles = data.roles; DB.setRoles(roles); }
+                    if (data.tags) { tags = data.tags; DB.setTags(tags); }
+                    showToast('Импорт готов', `${data.users.length} участников`, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } catch (err) {
+                    showToast('Ошибка', 'Неверный формат файла', 'danger');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    };
+
+    // ============ СТАРТ ============
+    updateOnlineCount();
+    setInterval(updateOnlineCount, 30000);
+
+    if (currentUser) {
+        openApp();
+    } else {
+        authScreen.classList.remove('hidden');
+    }
+
+    console.log('CLARK\'S EVENTS Terminal loaded.');
+})();
+</script>
+
+</body>
+</html>
